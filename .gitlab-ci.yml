@@ -1,0 +1,50 @@
+stages:
+  - test
+  - build
+  - scan
+  - deploy
+
+variables:
+  IMAGE: "localhost/devops/campusboard"
+
+test:
+  stage: test
+  tags:
+    - local
+  script:
+    - python3 -m venv .venv
+    - . .venv/bin/activate
+    - pip install -q -r requirements.txt -r requirements-dev.txt
+    - pytest -v
+
+build-image:
+  stage: build
+  tags:
+    - local
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - echo "$HARBOR_PASSWORD" | docker login localhost -u "$HARBOR_USER" --password-stdin
+    - docker build -t $IMAGE:$CI_COMMIT_SHORT_SHA .
+    - docker push $IMAGE:$CI_COMMIT_SHORT_SHA
+
+scan:
+  stage: scan
+  tags:
+    - local
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity HIGH,CRITICAL --exit-code 0 $IMAGE:$CI_COMMIT_SHORT_SHA
+
+deploy:
+  stage: deploy
+  tags:
+    - local
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - python3 -m venv .venv
+    - . .venv/bin/activate
+    - pip install -q pyinfra
+    - TAG=$CI_COMMIT_SHORT_SHA pyinfra @local deploy.py
