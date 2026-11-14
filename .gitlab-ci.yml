@@ -46,4 +46,4 @@ deploy:
     - python3 -m venv .venv
     - . .venv/bin/activate
     - pip install -q pyinfra
-    - TAG=$CI_COMMIT_SHORT_SHA pyinfra @local deploy.py
+    - TAG=$CI_COMMIT_SHORT_SHA pyinfra -y @local deploy.py
