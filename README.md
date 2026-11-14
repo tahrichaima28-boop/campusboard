@@ -64,3 +64,5 @@ Uptime Kuma (http://localhost:3001) : monitor HTTP sur `http://localhost:3000/he
 
 ## Demo
 `./demo.sh` montre le cycle : modification, branche, push, Merge Request, pipeline, deploiement.
+
+Projet realise dans le cadre du module DevOps.
