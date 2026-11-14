@@ -6,7 +6,7 @@ import os
 from pyinfra.operations import server
 
 tag = os.environ.get("TAG", "latest")
-image = f"localhost/devops/campusboard:{tag}"
+image = f"localhost:5000/campusboard:{tag}"
 db_user = os.environ["DB_USER"]
 db_password = os.environ["DB_PASSWORD"]
 db_name = os.environ["DB_NAME"]
