@@ -1,15 +1,19 @@
 #!/bin/bash
-# Demo : modification -> branche -> push -> Merge Request
+# Démo : modification -> branche -> push -> Merge Request
 set -e
-echo "1. Modification du code..."
-sed -i 's/APP_VERSION = "\(.*\)"/APP_VERSION = "demo-'"$(date +%H%M%S)"'"/' app.py
 
-echo "2. Commit et push..."
-git checkout -b feature/demo-$(date +%s)
+echo "1. Modification du code (version de l'application)..."
+NEW="demo-$(date +%H%M%S)"
+sed -i "s/APP_VERSION = \".*\"/APP_VERSION = \"$NEW\"/" app.py
+
+echo "2. Branche, commit et push..."
+BRANCH="feature/demo-$(date +%s)"
+git checkout -b "$BRANCH"
 git add app.py
 git commit -m "feat: update app version (demo)"
-git push origin HEAD
+git push -u gitlab "$BRANCH"
 
-echo "3. Ouvrir la Merge Request dans GitLab, attendre le test vert, puis fusionner."
-echo "4. Apres fusion : build -> push Harbor -> scan -> deploy automatique."
-echo "5. Verification : curl http://localhost:3000/health"
+echo "3. Ouvrir la Merge Request :"
+echo "   http://localhost:8081/root/campusboard/-/merge_requests/new?merge_request%5Bsource_branch%5D=${BRANCH//\//%2F}"
+echo "4. Attendre le test vert, fusionner, puis suivre le pipeline (build, scan, deploy)."
+echo "5. Vérifier : curl http://localhost:3000/health   (version = $NEW)"
