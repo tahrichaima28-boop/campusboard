@@ -2,7 +2,7 @@ import os
 import psycopg2
 from flask import Flask, jsonify, request
 
-APP_VERSION = "demo-092359"
+APP_VERSION = "demo-093210"
 
 app = Flask(__name__)
 
